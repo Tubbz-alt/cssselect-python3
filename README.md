@@ -15,8 +15,10 @@ See [cssselect-python3.info](cssselect-python3.info) and [slack-desc](slack-desc
 ## BUILD
 
 ```
-git clone https://github.com/slackwarecn/cssselect-python3.git
+git clone https://github.com/slackwarecn-slackbuilds/cssselect-python3.git
 cd cssselect-python3
-PREBUILD=yes ./cssselect-python3.SlackBuild
+source cssselect-python3.info
+wget $DOWNLOAD
+./cssselect-python3.SlackBuild
 ```
 

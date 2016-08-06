@@ -23,14 +23,13 @@
 #  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 #  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+set -e
 
 PRGNAM=cssselect-python3
 PKGTYPE=${PKGTYPE:-txz}
 VERSION=${VERSION:-0.9.1}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SBo}
-DOWNLOAD="http://pypi.python.org/packages/source/c/cssselect/cssselect-0.9.1.tar.gz"
-MD5SUM="c74f45966277dc7a0f768b9b0f3522ac"
 
 if [ -z "$ARCH" ]; then
   case "$( uname -m )" in
@@ -59,21 +58,13 @@ else
   LIBDIRSUFFIX=""
 fi
 
-set -e
-
-if [[ 'yes' == $PREBUILD ]]
-then
-  wget -N $DOWNLOAD
-  test $MD5SUM == $(md5sum $(basename $DOWNLOAD) | awk '{print $1}')
-fi
-
-rm -rf $PKG
-mkdir -p $TMP $PKG $OUTPUT
+rm -rvf $PKG
+mkdir -pv $TMP $PKG $OUTPUT
 cd $TMP
-rm -rf ${PRGNAM%-python3}-$VERSION
-tar xvf $CWD/${PRGNAM%-python3}-$VERSION.tar.gz
+rm -rvf ${PRGNAM%-python3}-$VERSION
+tar -zxvf $CWD/${PRGNAM%-python3}-$VERSION.tar.gz
 cd ${PRGNAM%-python3}-$VERSION
-chown -R root:root .
+chown -Rv root:root .
 find -L . \
  \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 -o -perm 511 \) \
  -exec chmod 755 {} \; -o \
@@ -88,19 +79,19 @@ find $PKG -print0 | xargs -0 file | grep -e "executable" -e "shared object" | gr
 # Install man pages if Sphinx and Pygments are installed.
 if python3 -c 'import sphinx.pygments_styles' 2>/dev/null; then
   python3 setup.py build_sphinx -b man
-  install -D -m 0644 docs/_build/man/$PRGNAM.1 $PKG/usr/man/man1/$PRGNAM.1
+  install -Dv -m0644 docs/_build/man/$PRGNAM.1 $PKG/usr/man/man1/$PRGNAM.1
   gzip -9 $PKG/usr/man/man1/$PRGNAM.1
-  rm -rf docs/_build
+  rm -rvf docs/_build
 fi
 
 mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
 cp -a \
   AUTHORS CHANGES LICENSE PKG-INFO README.rst docs/* \
   $PKG/usr/doc/$PRGNAM-$VERSION
-cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
+install -Dv -m0644 $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
 
 mkdir -p $PKG/install
-cat $CWD/slack-desc > $PKG/install/slack-desc
+install -Dv -m0644 $CWD/slack-desc > $PKG/install/slack-desc
 
 cd $PKG
 /sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.${PKGTYPE:-tgz}
